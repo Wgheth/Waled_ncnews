@@ -63,7 +63,7 @@ describe("app", () => {
          expect(result.body[0].comment_count).toBe('2')
          expect(result.body[5].comment_count).toBe('11')
          expect(result.body[result.body.length-1].created_at).toBe('2020-01-07T14:08:00.000Z')
-         console.log(result.body);
+        //  console.log(result.body);
        });
     });
     
