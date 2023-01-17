@@ -35,14 +35,12 @@ const {
   }
 
   const getComments = (req, res, next) => {
-  
-
-    readComments(req)
+  readComments(req)
     .then((comments) => {
       res.status(200).send(comments);
     })
     .catch((err) => {
-      console.log(err);
+   
       next(err);
     });
 

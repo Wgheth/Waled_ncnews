@@ -30,7 +30,7 @@ const readArticles = () => {
 const readArticlesID = (id) =>{
   return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
     .then((result) => {
-      console.log(result.rows);
+      
       if (result.rows.length === 0){
         return Promise.reject({status: 404, msg: "Article not found"});
       } else{
@@ -43,10 +43,7 @@ const readArticlesID = (id) =>{
       return finalObj
       }
       })
-    
-
- 
-
+  
 }
 
 const readComments = (req) =>{
@@ -59,15 +56,13 @@ const readComments = (req) =>{
       [article_id]
     )
     .then((result) => {
+      if (result.rows.length === 0){
+        return Promise.reject({status: 404, msg: "Article not found"});
+      } else{
       return result.rows;
+      }
     })
-    .catch((err) => {
-      console.log(err);
-    });
-
-
-}
-
+    }
 
 
 
