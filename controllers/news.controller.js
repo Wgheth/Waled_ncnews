@@ -1,9 +1,9 @@
 const {
-  readTopics, readArticles } = require("../models/news.model");
+  readTopics, readArticles, readArticlesID, readComments } = require("../models/news.model");
   
   const getObjects = (req, res, next) => {
-    readTopics().then((data) => {
-      res.status(200).send(data);
+    readTopics().then((topics) => {
+      res.status(200).send(topics);
     })
     .catch((err) => {
       console.log(err);
@@ -12,13 +12,37 @@ const {
   };
   
 
-  const getarticles = (req, res, next) => {
-    readArticles().then((data) => {
-      res.status(200).send(data);
+  const getArticles = (req, res, next) => {
+    readArticles().then((articles) => {
+      res.status(200).send(articles);
     })
     .catch((err) => {
       console.log(err);
       next(err);
     });
   };
- module.exports = {  getObjects, getarticles };
+
+  const getArticlesID = ( req, res, next) => {
+    const { id } = req.params
+     
+    readArticlesID(id).then((article) => {
+    res.status(200).send(article);
+    })
+    .catch((err)=>{
+      // console.log(err);
+      next(err)
+    }) 
+  }
+
+  const getComments = (req, res, next) => {
+  
+    // readComments(req)
+    // .then((comments) => {
+    //   res.status(200).send(comments);
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    //   next(err);
+    // });
+  }
+ module.exports = {  getObjects, getArticles, getArticlesID, getComments };
