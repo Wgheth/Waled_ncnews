@@ -155,6 +155,20 @@ describe("app", () => {
           ]);
         });
     });
+
+
+    test('Returns Error with 404 when the article id it does not exist', () => {
+      const article_id = 50;
+      return request(app)
+    .get(`/api/articles/${article_id}/commentS`)
+      .expect(404)
+      .then(({body})=>{
+        console.log(body);
+        expect(body.msg).toBe("Article not found")
+
+        });
+      
+    });
   });
   
   
