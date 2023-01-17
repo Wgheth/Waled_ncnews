@@ -21,6 +21,7 @@ const readArticles = () => {
   
   return db.query(countString)
     .then((result) => {
+      console.log(result.rows);
     return result.rows;
     }).catch((err) => {
       console.log(err);
