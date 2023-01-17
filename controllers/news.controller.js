@@ -29,13 +29,14 @@ const {
     res.status(200).send(article);
     })
     .catch((err)=>{
-   
+
       next(err)
     }) 
   }
 
   const getComments = (req, res, next) => {
   
+
     readComments(req)
     .then((comments) => {
       res.status(200).send(comments);
@@ -44,5 +45,6 @@ const {
       console.log(err);
       next(err);
     });
+
   }
  module.exports = {  getObjects, getArticles, getArticlesID, getComments };

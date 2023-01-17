@@ -21,7 +21,6 @@ const readArticles = () => {
   
   return db.query(countString)
     .then((result) => {
-      console.log(result.rows);
     return result.rows;
     }).catch((err) => {
       console.log(err);
@@ -51,6 +50,7 @@ const readArticlesID = (id) =>{
 }
 
 const readComments = (req) =>{
+
   const { article_id } = req.params;
   
   return db
@@ -65,8 +65,11 @@ const readComments = (req) =>{
       console.log(err);
     });
 
+
 }
 
 
 
+
 module.exports = { readTopics, readArticles, readArticlesID, readComments };
+
