@@ -29,20 +29,20 @@ const {
     res.status(200).send(article);
     })
     .catch((err)=>{
-      // console.log(err);
+   
       next(err)
     }) 
   }
 
   const getComments = (req, res, next) => {
   
-    // readComments(req)
-    // .then((comments) => {
-    //   res.status(200).send(comments);
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    //   next(err);
-    // });
+    readComments(req)
+    .then((comments) => {
+      res.status(200).send(comments);
+    })
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
   }
  module.exports = {  getObjects, getArticles, getArticlesID, getComments };
