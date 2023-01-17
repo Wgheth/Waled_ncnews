@@ -1,4 +1,3 @@
-
 const { app } = require("../app.js");
 const request = require("supertest");
 const  db  = require("../db/connection");
@@ -61,8 +60,7 @@ describe("app", () => {
          
          });
 
-         
-        
+
        });
     });
 
@@ -119,45 +117,46 @@ describe("app", () => {
   });
 
 
-  // describe("/api/articles/:article_id/comments", () => {
-  //   test("an array of comments for the a given article_id", () => {
-  //     const article_id = 9;
-  //     return request(app)
-  //   .get(`/api/articles/${article_id}/commentS`)
-  //       .expect(200)
-  //       .then((result) => {
-  //         result.body.forEach((comment) => {
-  //           expect(comment).toHaveProperty("comment_id");
-  //           expect(comment).toHaveProperty("body")
-  //           expect(comment).toHaveProperty("article_id");
-  //           expect(comment).toHaveProperty("created_at")
-  //           expect(comment).toHaveProperty("votes");
-  //           expect(comment).toHaveProperty("author")
+
+  describe("/api/articles/:article_id/comments", () => {
+    test("it returns an array of comments for  a given article_id", () => {
+      const article_id = 9;
+      return request(app)
+    .get(`/api/articles/${article_id}/commentS`)
+        .expect(200)
+        .then((result) => {
+          result.body.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("body")
+            expect(comment).toHaveProperty("article_id");
+            expect(comment).toHaveProperty("created_at")
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("author")
            
            
-  //          });
-  //         expect(result.body).toEqual([
-  //           {
-  //             comment_id: 1,
-  //             body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-  //             article_id: 9,
-  //             author: 'butter_bridge',
-  //             votes: 16,
-  //             created_at: '2020-04-06T12:17:00.000Z'
-  //           },
-  //           {
-  //             comment_id: 17,
-  //             body: 'The owls are not what they seem.',
-  //             article_id: 9,
-  //             author: 'icellusedkars',
-  //             votes: 20,
-  //             created_at: '2020-03-14T17:02:00.000Z'
-  //           }
-  //         ]);
-  //       });
-  //   });
-  // });
+           });
+          expect(result.body).toEqual([
+            {
+              comment_id: 1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              article_id: 9,
+              author: 'butter_bridge',
+              votes: 16,
+              created_at: '2020-04-06T12:17:00.000Z'
+            },
+            {
+              comment_id: 17,
+              body: 'The owls are not what they seem.',
+              article_id: 9,
+              author: 'icellusedkars',
+              votes: 20,
+              created_at: '2020-03-14T17:02:00.000Z'
+            }
+          ]);
+        });
+    });
+  });
+
   
   
 });
-

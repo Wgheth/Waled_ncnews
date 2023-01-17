@@ -50,22 +50,26 @@ const readArticlesID = (id) =>{
 }
 
 const readComments = (req) =>{
-  // const { article_id } = req.params;
+
+  const { article_id } = req.params;
   
-  // return db
-  //   .query(
-  //     "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
-  //     [article_id]
-  //   )
-  //   .then((result) => {
-  //     return result.rows;
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  return db
+    .query(
+      "SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;",
+      [article_id]
+    )
+    .then((result) => {
+      return result.rows;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
 
 }
 
 
 
+
 module.exports = { readTopics, readArticles, readArticlesID, readComments };
+
