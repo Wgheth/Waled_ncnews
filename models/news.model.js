@@ -42,6 +42,7 @@ const readArticlesID = (id) =>{
 }
 
 const readComments = (req) =>{
+
   const { article_id } = req.params;
     return db
     .query(
@@ -56,6 +57,7 @@ const readComments = (req) =>{
       return result.rows;
       }
     })
+
 }
 
 function addComment(req) {
@@ -74,4 +76,8 @@ function addComment(req) {
 }
 
 
+
 module.exports = { readTopics, readArticles, readArticlesID, readComments, addComment };
+
+
+
