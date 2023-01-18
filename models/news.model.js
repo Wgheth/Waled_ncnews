@@ -55,6 +55,7 @@ const readComments = (req) =>{
       } else{
       return result.rows;
       }
+   
     })
 }
 
@@ -66,10 +67,11 @@ function addComment(req) {
       [req.body[0]["body"], req.body[0]["username"], article_id, 0]
     )
     .then((result) => {
+      
     return result.rows;
     })
     .catch(() => {
-      return Promise.reject({ status: 404, msg: "not found" });
+      return Promise.reject({ status: 404, msg: "User does not exist" });
     });
 }
 

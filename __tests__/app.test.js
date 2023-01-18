@@ -196,7 +196,8 @@ describe("app", () => {
         .send(postartecle)
         .expect(201)
         .then((result) => {
-          
+         
+       expect(Object.keys(result.body[0]).length).toBe(6);  
         expect(result.body[0]).toHaveProperty("comment_id");
         expect(result.body[0]).toHaveProperty("body")
         expect(result.body[0]).toHaveProperty("article_id");
@@ -208,6 +209,24 @@ describe("app", () => {
         expect(result.body[0].author).toBe("icellusedkars")
            
         });
+    });
+
+    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+      const postartecle = [
+        {
+          username: "Waled",
+          body: "I have never expected this to be stressful.",
+        },
+      ];
+      const article_id = 3;
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(postartecle)
+        .expect(404)
+        .then(({body})=>{
+        expect(body.msg).toBe("User does not exist")
+
+    });
     });
   });
   

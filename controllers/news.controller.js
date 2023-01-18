@@ -48,8 +48,8 @@ const {
   const postComment = (req, res, next) => {
     
     addComment(req)
-      .then((data) => {
-        res.status(201).send(data);
+      .then((comment) => {
+        res.status(201).send(comment);
       })
       .catch((err) => {
         console.log(err);
