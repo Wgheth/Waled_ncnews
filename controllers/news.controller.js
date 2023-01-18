@@ -29,13 +29,14 @@ const {
     res.status(200).send(article);
     })
     .catch((err)=>{
-   
+
       next(err)
     }) 
   }
 
   const getComments = (req, res, next) => {
   
+
     readComments(req)
     .then((comments) => {
       res.status(200).send(comments);
@@ -43,6 +44,7 @@ const {
     .catch((err) => {
       next(err);
     });
+
   }
 
   const postComment = (req, res, next) => {
