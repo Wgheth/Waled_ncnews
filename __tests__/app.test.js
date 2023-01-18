@@ -88,10 +88,8 @@ describe("app", () => {
       .get(`/api/articles/${article_id}`)
       .expect(404)
       .then(({body})=>{
-        console.log(body);
-        expect(body.msg).toBe("Article not found")
-
-        });
+      expect(body.msg).toBe("Article not found")
+     });
       
     });
 
@@ -119,10 +117,21 @@ describe("app", () => {
 
 
   describe("/api/articles/:article_id/comments", () => {
+    test('Returns Error with 404 when the article id it does not exist', () => {
+      const article_id = 50;
+      return request(app)
+     .get(`/api/articles/${article_id}/commentS`)
+      .expect(404)
+      .then(({body})=>{
+      expect(body.msg).toBe("Article not found")
+
+        });
+      
+    });
     test("it returns an array of comments for  a given article_id", () => {
       const article_id = 9;
       return request(app)
-    .get(`/api/articles/${article_id}/commentS`)
+        .get(`/api/articles/${article_id}/commentS`)
         .expect(200)
         .then((result) => {
           result.body.forEach((comment) => {
@@ -155,6 +164,7 @@ describe("app", () => {
           ]);
         });
     });
+
   });
 
   
