@@ -117,17 +117,7 @@ describe("app", () => {
 
 
   describe("/api/articles/:article_id/comments", () => {
-    test('Returns Error with 404 when the article id it does not exist', () => {
-      const article_id = 50;
-      return request(app)
-     .get(`/api/articles/${article_id}/commentS`)
-      .expect(404)
-      .then(({body})=>{
-      expect(body.msg).toBe("Article not found")
-
-        });
-      
-    });
+    
     test("it returns an array of comments for  a given article_id", () => {
       const article_id = 9;
       return request(app)
@@ -166,6 +156,59 @@ describe("app", () => {
     });
 
   });
+
+  test('Returns Error with 404 when the article id it does not exist', () => {
+    const article_id = 50;
+    return request(app)
+   .get(`/api/articles/${article_id}/commentS`)
+    .expect(404)
+    .then(({body})=>{
+    expect(body.msg).toBe("Article not found")
+
+      });
+    
+  });
+
+  test('Returns Error with 404 if the article id is invalid', () => {
+    
+    return request(app)
+   .get("/api/articles/article/commentS")
+    .expect(400)
+    .then(({body})=>{
+    expect(body.msg).toBe("Invalid Path")
+
+      });
+    
+  });
   
+
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+      const postartecle = [
+        {
+          username: "icellusedkars",
+          body: "I have never expected this to be stressful.",
+        },
+      ];
+      const article_id = 3;
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(postartecle)
+        .expect(201)
+        .then((result) => {
+          
+        expect(result.body[0]).toHaveProperty("comment_id");
+        expect(result.body[0]).toHaveProperty("body")
+        expect(result.body[0]).toHaveProperty("article_id");
+        expect(result.body[0]).toHaveProperty("votes");
+        expect(result.body[0]).toHaveProperty("author")
+        expect(result.body[0]).toHaveProperty("created_at")
+
+        expect(result.body[0].body).toBe("I have never expected this to be stressful.")
+        expect(result.body[0].author).toBe("icellusedkars")
+           
+        });
+    });
+  });
   
 });
