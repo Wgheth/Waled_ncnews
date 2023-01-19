@@ -301,5 +301,36 @@ describe("app", () => {
         });
     });
   });
+
+  describe("9. GET /api/users", () => {
+
+    test("it returns a 200 status and  an array of 4 objects and every object has 3 proberties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((users) => {
+        expect(users.body).toHaveLength(4)
+        users.body.forEach((user) => {
+        expect(Object.keys(user).length).toBe(3);;
+        });
+        });
+    });
+  
+    test("Returns an array of objects, where each object should have username, name and avatar_url proberties  ", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((users) => {
+        
+            users.body.forEach((user) => {
+              expect(user).toHaveProperty("username");
+              expect(user).toHaveProperty("name");
+              expect(user).toHaveProperty("avatar_url");
+            });
+          
+        });
+    });
+    
+    });
   
 });

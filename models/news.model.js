@@ -95,4 +95,19 @@ function updateVotes(req) {
   }
 
 
-module.exports = { readTopics, readArticles, readArticlesID, readComments, addComment, updateVotes };
+  function getUsersArr(req) {
+    return db
+      .query("SELECT * FROM users")
+      .then((result) => {
+        if (result.rowCount === 0)
+          return Promise.reject({ status: 404, msg: "user does not exist" });
+        else return result.rows;
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
+
+
+module.exports = { readTopics, readArticles, readArticlesID, readComments, 
+  addComment, updateVotes, getUsersArr };
