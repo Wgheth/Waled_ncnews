@@ -116,12 +116,12 @@ describe("app", () => {
 
 
 
-  describe("/api/articles/:article_id/comments", () => {
+  describe("GET /api/articles/:article_id/comments", () => {
     
     test("it returns an array of comments for  a given article_id", () => {
       const article_id = 9;
       return request(app)
-        .get(`/api/articles/${article_id}/commentS`)
+        .get(`/api/articles/${article_id}/comments`)
         .expect(200)
         .then((result) => {
           result.body.forEach((comment) => {
@@ -158,7 +158,7 @@ describe("app", () => {
   });
 
 
-  test('Returns Error with 404 when the article id it does not exist', () => {
+  test('Returns Error with 404 when invalid path', () => {
     const article_id = 50;
     return request(app)
    .get(`/api/articles/${article_id}/commentS`)
@@ -173,7 +173,7 @@ describe("app", () => {
   test('Returns Error with 404 if the article id is invalid', () => {
     
     return request(app)
-   .get("/api/articles/article/commentS")
+   .get("/api/articles/invalid_article_id/comments")
     .expect(400)
     .then(({body})=>{
     expect(body.msg).toBe("Invalid id")
@@ -185,7 +185,7 @@ describe("app", () => {
   
 
   describe("POST /api/articles/:article_id/comments", () => {
-    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+    test("It returns status code 201 and an object that have an updated body and author properties", () => {
       const postartecle = [
         {
           username: "icellusedkars",
@@ -199,21 +199,21 @@ describe("app", () => {
         .expect(201)
         .then((result) => {
          
-       expect(Object.keys(result.body[0]).length).toBe(6);  
-        expect(result.body[0]).toHaveProperty("comment_id");
-        expect(result.body[0]).toHaveProperty("body")
-        expect(result.body[0]).toHaveProperty("article_id");
-        expect(result.body[0]).toHaveProperty("votes");
-        expect(result.body[0]).toHaveProperty("author")
-        expect(result.body[0]).toHaveProperty("created_at")
+     expect(Object.keys(result.body).length).toBe(6);  
+        expect(result.body).toHaveProperty("comment_id");
+        expect(result.body).toHaveProperty("body")
+        expect(result.body).toHaveProperty("article_id");
+        expect(result.body).toHaveProperty("votes");
+        expect(result.body).toHaveProperty("author")
+        expect(result.body).toHaveProperty("created_at")
 
-        expect(result.body[0].body).toBe("I have never expected this to be stressful.")
-        expect(result.body[0].author).toBe("icellusedkars")
+        expect(result.body.body).toBe("I have never expected this to be stressful.")
+        expect(result.body.author).toBe("icellusedkars")
            
         });
     });
 
-    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+    test("It returns status code 400 and message: User does not exist, if the user doesn`t exist", () => {
       const postartecle = [
         {
           username: "Waled",
@@ -224,12 +224,52 @@ describe("app", () => {
       return request(app)
         .post(`/api/articles/${article_id}/comments`)
         .send(postartecle)
-        .expect(404)
+        .expect(400)
         .then(({body})=>{
         expect(body.msg).toBe("User does not exist")
 
     });
     });
+
+    test("It returns status code 400 with a message (Missing properties) if the username and or body are not present on the request", () => {
+      const postartecle = [
+        {
+          body: "I have never expected this to be stressful.",
+        },
+      ];
+      const article_id = 3;
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(postartecle)
+        .expect(400)
+
+        .then(({body})=>{
+        expect(body.msg).toBe("Missing properties")
+  
+      });
+        
+      });
+
+      test('Returns Error with 400 non existent article id', () => {
+        const postartecle = [
+          {
+            username: "icellusedkars",
+            body: "I have never expected this to be stressful.",
+          },
+        ];
+        const article_id = 50;
+        return request(app)
+          .post(`/api/articles/${article_id}/comments`)
+          .send(postartecle)
+          .expect(400)
+         .then(({body})=>{
+        expect(body.msg).toBe("User does not exist")
+    
+          });
+        
+      });
+      
+    
   });
 
   describe("8. PATCH /api/articles/:article_id", () => {
@@ -279,10 +319,12 @@ describe("app", () => {
         });
     });
   
-    test('Returns Error with 404 when the article id it does not exist', () => {
+    test('Returns Error with 404 for invalid path ( id is valid but doesnt exist )', () => {
       const article_id = 50;
+      const incremnt = { inc_votes: -50 };
       return request(app)
       .patch(`/api/articles/${article_id}`)
+      .send(incremnt)
       .expect(404)
       .then(({body})=>{
       expect(body.msg).toBe("Article not found")
@@ -293,13 +335,52 @@ describe("app", () => {
   
     test("it returns a 400 status with a message : (Invalid id) if the endpoint is invalid", () => {
       const article_id = "Waled";
+      const incremnt = { inc_votes: -50 };
       return request(app)
         .patch(`/api/articles/${article_id}`)
+        .send(incremnt)
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid id");
         });
     });
+
+    test('Returns Error with 400 when incremnt isnt provided/has a missing inv_votes/isnt a number', () => {
+      
+      const article_id = 9;
+     
+      return request(app)
+      .patch(`/api/articles/${article_id}`)
+     
+      .expect(400)
+      .then(({body})=>{
+      expect(body.msg).toBe("No votes provided")
+  
+        });
+      
+    });
   });
+
+  describe("9. GET /api/users", () => {
+
+    test("it returns a 200 status and  an array of 4 objects and every object has 3 proberties where each object should have username, name and avatar_url proberties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((users) => {
+        expect(users.body).toHaveLength(4)
+        users.body.forEach((user) => {
+        expect(Object.keys(user).length).toBe(3);
+        users.body.forEach((user) => {
+          expect(user).toHaveProperty("username");
+          expect(user).toHaveProperty("name");
+          expect(user).toHaveProperty("avatar_url");
+        });
+        });
+        });
+    });
+  
+    
+    });
   
 });

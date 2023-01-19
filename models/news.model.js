@@ -36,6 +36,7 @@ const readArticlesID = (id) =>{
       for(let i = 0; i < result.rows.length; i++ ) {
         Object.assign(finalObj, result.rows[i]);
       }
+      
       return finalObj
       }
       }) 
@@ -63,23 +64,36 @@ const readComments = (req) =>{
 
 function addComment(req) {
   const { article_id } = req.params;
+  const {username, body} = req.body[0]
+ 
+  if( username === undefined || body === undefined){
+    return Promise.reject({ status: 400, msg: "Missing properties" });
+  } else
   return db
     .query(
       "INSERT INTO comments (body, author, article_id, votes)VALUES($1,$2,$3,$4) RETURNING *;",
       [req.body[0]["body"], req.body[0]["username"], article_id, 0]
     )
     .then((result) => {
-      
-    return result.rows;
+    
+    let finalObj = {};
+
+    for(let i = 0; i < result.rows.length; i++ ) {
+        Object.assign(finalObj, result.rows[i]);
+        
+      return finalObj
+      }
+    
     })
-    .catch(() => {
-      return Promise.reject({ status: 404, msg: "User does not exist" });
-    });
+
 }
 
 function updateVotes(req) {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
+  if( inc_votes === undefined || isNaN(inc_votes)){
+    return Promise.reject({ status: 400, msg: "No votes provided" });
+  } else
   return db
     .query(
       `UPDATE articles SET votes = votes + $1 WHERE article_id = $2  RETURNING *;`,
@@ -95,4 +109,17 @@ function updateVotes(req) {
   }
 
 
-module.exports = { readTopics, readArticles, readArticlesID, readComments, addComment, updateVotes };
+  function getUsersArr(req) {
+    return db
+      .query("SELECT * FROM users")
+      .then((result) => {
+        if (result.rowCount === 0)
+          return Promise.reject({ status: 404, msg: "user does not exist" });
+        else return result.rows;
+      })
+      
+  }
+
+
+module.exports = { readTopics, readArticles, readArticlesID, readComments, 
+  addComment, updateVotes, getUsersArr };

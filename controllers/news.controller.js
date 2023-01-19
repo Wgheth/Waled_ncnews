@@ -1,6 +1,6 @@
 const {
-  readTopics, readArticles, readArticlesID, readComments, addComment, updateVotes  } = require("../models/news.model");
-  
+  readTopics, readArticles, readArticlesID, readComments, addComment,
+   updateVotes, getUsersArr  } = require("../models/news.model");
   const getObjects = (req, res, next) => {
     readTopics().then((topics) => {
       res.status(200).send(topics);
@@ -69,4 +69,16 @@ const {
      next(err);
    });
   }
- module.exports = {  getObjects, getArticles, getArticlesID, getComments, postComment, patchArticle };
+
+  function getUsers(req, res, next) {
+    getUsersArr(req)
+      .then((user) => {
+        res.status(200).send(user);
+      })
+      .catch((err) => {
+        
+        next(err);
+      });
+  }
+  module.exports = {  getObjects, getArticles, 
+    getArticlesID, getComments, postComment, patchArticle, getUsers };
