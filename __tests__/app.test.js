@@ -89,8 +89,7 @@ describe("app", () => {
       .expect(404)
       .then(({body})=>{
       expect(body.msg).toBe("Article not found")
-
-        });
+     });
       
     });
 
@@ -115,23 +114,14 @@ describe("app", () => {
     });
   });
 
-   describe("/api/articles/:article_id/comments", () => {
-   test('Returns Error with 404 when the article id it does not exist', () => {
-      const article_id = 50;
-      return request(app)
-    .get(`/api/articles/${article_id}/commentS`)
-      .expect(404)
-      .then(({body})=>{
-       
-       expect(body.msg).toBe("Article not found")
 
-        });
-      
-    });
+
+  describe("/api/articles/:article_id/comments", () => {
+    
     test("it returns an array of comments for  a given article_id", () => {
       const article_id = 9;
       return request(app)
-    .get(`/api/articles/${article_id}/commentS`)
+        .get(`/api/articles/${article_id}/commentS`)
         .expect(200)
         .then((result) => {
           result.body.forEach((comment) => {
@@ -164,8 +154,152 @@ describe("app", () => {
           ]);
         });
     });
+
+  });
+
+
+  test('Returns Error with 404 when the article id it does not exist', () => {
+    const article_id = 50;
+    return request(app)
+   .get(`/api/articles/${article_id}/commentS`)
+    .expect(404)
+    .then(({body})=>{
+    expect(body.msg).toBe("Article not found")
+
+      });
+    
+  });
+
+  test('Returns Error with 404 if the article id is invalid', () => {
+    
+    return request(app)
+   .get("/api/articles/article/commentS")
+    .expect(400)
+    .then(({body})=>{
+    expect(body.msg).toBe("Invalid id")
+
+      });
+    
   });
 
   
+
+  describe("POST /api/articles/:article_id/comments", () => {
+    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+      const postartecle = [
+        {
+          username: "icellusedkars",
+          body: "I have never expected this to be stressful.",
+        },
+      ];
+      const article_id = 3;
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(postartecle)
+        .expect(201)
+        .then((result) => {
+         
+       expect(Object.keys(result.body[0]).length).toBe(6);  
+        expect(result.body[0]).toHaveProperty("comment_id");
+        expect(result.body[0]).toHaveProperty("body")
+        expect(result.body[0]).toHaveProperty("article_id");
+        expect(result.body[0]).toHaveProperty("votes");
+        expect(result.body[0]).toHaveProperty("author")
+        expect(result.body[0]).toHaveProperty("created_at")
+
+        expect(result.body[0].body).toBe("I have never expected this to be stressful.")
+        expect(result.body[0].author).toBe("icellusedkars")
+           
+        });
+    });
+
+    test("It returns status code 201 and array with an object that have an updated body and author properties", () => {
+      const postartecle = [
+        {
+          username: "Waled",
+          body: "I have never expected this to be stressful.",
+        },
+      ];
+      const article_id = 3;
+      return request(app)
+        .post(`/api/articles/${article_id}/comments`)
+        .send(postartecle)
+        .expect(404)
+        .then(({body})=>{
+        expect(body.msg).toBe("User does not exist")
+
+    });
+    });
+  });
+
+  describe("8. PATCH /api/articles/:article_id", () => {
+    test("It Returns 200 status and an array of objects for a particular article", () => {
+      const article_id = 3;
+      const incremnt = { inc_votes: 100 };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(incremnt)
+        .expect(200)
+        .then((result) => {
+         
+            expect(result.body[0]).toHaveProperty("article_id");
+            expect(result.body[0]).toHaveProperty("title");
+            expect(result.body[0]).toHaveProperty("topic");
+            expect(result.body[0]).toHaveProperty("author");
+            expect(result.body[0]).toHaveProperty("body");
+            expect(result.body[0]).toHaveProperty("created_at");
+            expect(result.body[0]).toHaveProperty("votes");
+            expect(result.body[0]).toHaveProperty("article_img_url");
+        });
+    });
+  
+    test("It Returns 200 status and an array of objects for a particular article with the updated votes property", () => {
+      const article_id = 1;
+      const incremnt = { inc_votes: 50 };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(incremnt)
+        .expect(200)
+        .then((result) => {
+          expect(result.body[0].votes).toBe(150);
+        
+        });
+    });
+  
+    test("It Returns 200 status and an array of objects for a particular article with the updated votes property", () => {
+      const article_id = 9;
+      const incremnt = { inc_votes: -50 };
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .send(incremnt)
+        .expect(200)
+        .then((result) => {
+          expect(result.body[0].votes).toBe(-50);
+        
+        });
+    });
+  
+    test('Returns Error with 404 when the article id it does not exist', () => {
+      const article_id = 50;
+      return request(app)
+      .patch(`/api/articles/${article_id}`)
+      .expect(404)
+      .then(({body})=>{
+      expect(body.msg).toBe("Article not found")
+  
+        });
+      
+    });
+  
+    test("it returns a 400 status with a message : (Invalid id) if the endpoint is invalid", () => {
+      const article_id = "Waled";
+      return request(app)
+        .patch(`/api/articles/${article_id}`)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid id");
+        });
+    });
+  });
   
 });

@@ -1,5 +1,5 @@
 const {
-  readTopics, readArticles, readArticlesID, readComments } = require("../models/news.model");
+  readTopics, readArticles, readArticlesID, readComments, addComment, updateVotes  } = require("../models/news.model");
   
   const getObjects = (req, res, next) => {
     readTopics().then((topics) => {
@@ -35,14 +35,38 @@ const {
   }
 
   const getComments = (req, res, next) => {
-  readComments(req)
+  
+
+    readComments(req)
     .then((comments) => {
       res.status(200).send(comments);
     })
     .catch((err) => {
-   
       next(err);
     });
 
   }
- module.exports = {  getObjects, getArticles, getArticlesID, getComments };
+
+  const postComment = (req, res, next) => {
+    
+    addComment(req)
+      .then((comment) => {
+        res.status(201).send(comment);
+      })
+      .catch((err) => {
+       
+        next(err);
+      });
+  };
+
+  function patchArticle (req, res, next) {
+    updateVotes(req)
+   .then((votes) => {
+    res.status(200).send(votes);
+   })
+   .catch((err) => {
+    
+     next(err);
+   });
+  }
+ module.exports = {  getObjects, getArticles, getArticlesID, getComments, postComment, patchArticle };
