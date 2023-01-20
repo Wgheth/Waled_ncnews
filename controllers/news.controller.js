@@ -1,6 +1,6 @@
 const {
   readTopics, readArticles, readArticlesID, readComments, addComment,
-   updateVotes, getUsersArr  } = require("../models/news.model");
+   updateVotes, getUsersArr, removeComment  } = require("../models/news.model");
   const getObjects = (req, res, next) => {
     readTopics().then((topics) => {
       res.status(200).send(topics);
@@ -80,5 +80,15 @@ const {
         next(err);
       });
   }
+
+  const deleteComment = (req, res,next) => {
+    const { id } = req.params
+     removeComment(id).then(()=>{
+      res.sendStatus(204)
+     }).catch((err) => {
+        
+      next(err);
+    });
+  }
   module.exports = {  getObjects, getArticles, 
-    getArticlesID, getComments, postComment, patchArticle, getUsers };
+    getArticlesID, getComments, postComment, patchArticle, getUsers, deleteComment };

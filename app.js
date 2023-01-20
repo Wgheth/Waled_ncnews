@@ -1,7 +1,7 @@
 const express = require("express");
 
   const {
-    getObjects, getArticles, getArticlesID, getComments, postComment, patchArticle, getUsers
+    getObjects, getArticles, getArticlesID, getComments, postComment, patchArticle, getUsers, deleteComment
     } = require("./controllers/news.controller");
 const app = express();
 app.use(express.json());
@@ -13,6 +13,7 @@ app.use(express.json());
  app.post("/api/articles/:article_id/comments", postComment);
  app.patch(`/api/articles/:article_id`, patchArticle);
  app.get("/api/users", getUsers);
+ app.delete("/api/comments/:id", deleteComment);
 
  
 
