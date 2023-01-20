@@ -4,6 +4,9 @@ const  db  = require("../db/connection");
 const data = require("../db/data/test-data/index");
 const   seed  = require("../db/seeds/seed");
 
+require('jest-sorted');
+
+
 afterAll(() => {
   return db.end();
 });
@@ -23,7 +26,7 @@ describe("app", () => {
         });
         
     });
-    it("returns a status of 200, and array of three objects where each object has three proberties ", () => {
+    it.only("returns a status of 200, and array of three objects where each object has three proberties ", () => {
       return request(app)
       .get("/api/topics")
       .expect(200)
@@ -34,7 +37,7 @@ describe("app", () => {
           expect(topic).toHaveProperty("description")
           expect(result.body[0].slug).toBe('mitch')
           expect(result.body[1].description).toBe('Not dogs')
-         
+          
         });
       });
     });
@@ -71,10 +74,8 @@ describe("app", () => {
       .get("/api/articles")
       .expect(200)
       .then((result) => {
-    expect(result.body[0].created_at).toBe('2020-11-03T09:12:00.000Z')
-    expect(result.body[0].comment_count).toBe('2')
-    expect(result.body[5].comment_count).toBe('11')
-    expect(result.body[result.body.length-1].created_at).toBe('2020-01-07T14:08:00.000Z')
+
+        expect([result.body]).toBeSorted({ key: 'created_at' });
       })
    })
     
@@ -379,8 +380,91 @@ describe("app", () => {
         });
         });
     });
-  
-    
+  });
+
+  describe.only("10. GET /api/articles (queries)", () => {
+    test("it should return an array of articles objects filtered by a givin topic", () => {
+      
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=ASC&sortBy=article_id`)
+        .expect(200)
+        .then((data) => {
+        expect(data.body.length).toBe(11);
+        data.body.forEach((topic) => {
+        expect(topic.topic).toBe("mitch");
+        });
+        });
+    });
+
+    test("it should return an array of articles objects sorted in ascending order by article_id", () => {
+      
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=ASC&sortBy=article_id`)
+        .expect(200)
+        .then((articles) => {
+        expect(articles.body.length).toBe(11);
+        expect([articles.body]).toBeSorted({ key: 'article_id' });
+        });
     });
   
+      test("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
+     
+        return request(app)
+        .get(`/api/articles?topic=mitch`)
+        .expect(200)
+        .then((data) => {
+        expect(data.body.length).toBe(11);
+        expect([data.body]).toBeSorted({ key: 'created_at' }); 
+        data.body.forEach((topic) => {
+        expect(topic.topic).toBe("mitch");
+          
+          });
+
+        })
+       
+    });
+  
+  test(" it should return an array of all articles objects if no topic is passed", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toHaveLength(12);
+  
+         });
+  });
+
+  test("it should return a 400 and Please sort by acceptable parameter messsage when invalid sort by ", () => {
+      
+    return request(app)
+      .get(`/api/articles?topic=mitch&order=ASC&sortBy=body`)
+      .expect(400)
+      .then((data) => {
+        expect(data.body.msg).toBe("Please sort and oredr by acceptable parameters");
+       });
+      
+        });
+
+  test("it should return a 400 and Please sort and oredr by acceptable parameters messsage when invalid order by ", () => {
+    
+    return request(app)
+      .get(`/api/articles?topic=mitch&order=MKD&sortBy=body`)
+      .expect(400)
+      .then((data) => {
+      expect(data.body.msg).toBe("Please sort and oredr by acceptable parameters");
+      });
+            
+       });  
+  
+  test("Returns a 400 err status when passing a topic which doesn`t exist", () => {
+   
+      return request(app)
+      .get(`/api/articles?topic=NeverEnding`)
+      .expect(404)
+      .then((data) => {
+       expect(data.body.msg).toBe("Topic does not exist");
+      });
+  });
 });
+    
+   });

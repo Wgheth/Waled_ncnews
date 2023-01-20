@@ -13,14 +13,16 @@ const {
   
 
   const getArticles = (req, res, next) => {
-    readArticles().then((articles) => {
-      res.status(200).send(articles);
-    })
-    .catch((err) => {
-      console.log(err);
-      next(err);
-    });
-  };
+    const { sortBy, order } = req.query;
+    
+    readArticles(req, sortBy, order)
+          .then((articles) => {
+            res.status(200).send(articles);
+          })
+          .catch((err) => {
+            next(err);
+          });
+    };
 
   const getArticlesID = ( req, res, next) => {
     const { id } = req.params
