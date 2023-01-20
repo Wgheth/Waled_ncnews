@@ -14,6 +14,7 @@ const {
 
   const getArticles = (req, res, next) => {
     const { sortBy, order } = req.query;
+    
     readArticles(req, sortBy, order)
           .then((articles) => {
             res.status(200).send(articles);

@@ -18,13 +18,13 @@ const readArticles = ((req, sortBy = "created_at", order = "DESC")=>{
   return Promise.reject({status: 400, msg: 'Please sort and oredr by acceptable parameters'})
 } else 
 if (!topic){ 
-  let countString =  `SELECT articles.article_id, articles.title, articles.topic, 
+  const artiiclesString =  `SELECT articles.article_id, articles.title, articles.topic, 
   articles.author, articles.body, articles.created_at, articles.votes, 
   articles.article_img_url,  COUNT(comments.body) AS comment_count
   FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
   GROUP BY articles.article_id ORDER BY ${sortBy}  ${order};` 
   return db
-      .query(countString)
+      .query(artiiclesString)
       .then((result) => {
         return result.rows;
       })
