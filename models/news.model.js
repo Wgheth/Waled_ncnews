@@ -11,8 +11,13 @@ const readTopics = () => {
 
 const readArticles = ((req, sortBy = "created_at", order = "DESC")=>{
   const { topic } = req.query;
-
-  if (!topic){ 
+  const acceptedSorBy = ["created_at", "article_id", "title", "topic", "votes" ];
+  const acceptedOrderBy = ["DESC", "ASC"];
+ 
+  if (!acceptedSorBy.includes(sortBy) || !acceptedOrderBy.includes(order)){
+  return Promise.reject({status: 400, msg: 'Please sort and oredr by acceptable parameters'})
+} else 
+if (!topic){ 
   let countString =  `SELECT articles.article_id, articles.title, articles.topic, 
   articles.author, articles.body, articles.created_at, articles.votes, 
   articles.article_img_url,  COUNT(comments.body) AS comment_count
@@ -32,7 +37,7 @@ const readArticles = ((req, sortBy = "created_at", order = "DESC")=>{
       )
       .then((result) => {
         if (result.rows.length === 0) {
-          return Promise.reject({ status: 400, msg: "Bad request" });
+          return Promise.reject({ status: 404, msg: "Topic does not exist" });
         } else {
           return result.rows;
         }

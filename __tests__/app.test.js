@@ -393,14 +393,37 @@ describe("app", () => {
         .then((data) => {
           expect(data.body.length).toBe(11);
           expect([data.body]).toBeSorted({ key: 'article_id' });
+          console.log(data.body);
           data.body.forEach((topic) => {
           expect(topic.topic).toBe("mitch");
         
           });
         });
     });
-  
-    test.only("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
+
+    test("it should return a 400 and Please sort by acceptable parameter messsage when invalid sort by ", () => {
+      
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=ASC&sortBy=body`)
+        .expect(400)
+        .then((data) => {
+          expect(data.body.msg).toBe("Please sort and oredr by acceptable parameters");
+         });
+        
+          });
+
+    test("it should return a 400 and Please sort and oredr by acceptable parameters messsage when invalid order by ", () => {
+      
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=MKD&sortBy=body`)
+        .expect(400)
+        .then((data) => {
+        expect(data.body.msg).toBe("Please sort and oredr by acceptable parameters");
+        });
+              
+         });    
+
+       test("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
      
         return request(app)
         .get(`/api/articles?topic=mitch`)
@@ -436,13 +459,13 @@ describe("app", () => {
          });
   });
   
-  test("Returns a 400 err status when passing topic which doesn`t exist", () => {
+  test("Returns a 400 err status when passing a topic which doesn`t exist", () => {
    
       return request(app)
       .get(`/api/articles?topic=NeverEnding`)
-      .expect(400)
+      .expect(404)
       .then((data) => {
-       expect(data.body.msg).toBe("Bad request");
+       expect(data.body.msg).toBe("Topic does not exist");
       });
   });
 });
