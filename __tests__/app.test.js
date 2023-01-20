@@ -393,7 +393,7 @@ describe("app", () => {
         .then((data) => {
           expect(data.body.length).toBe(11);
           expect([data.body]).toBeSorted({ key: 'article_id' });
-          console.log(data.body);
+         
           data.body.forEach((topic) => {
           expect(topic.topic).toBe("mitch");
         
