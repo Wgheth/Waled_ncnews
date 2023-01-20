@@ -383,4 +383,31 @@ describe("app", () => {
     
     });
   
-});
+    describe("GET : Task-11 /api/articles/:article_id (comment count)", () => {
+      test("it should return a comment_count property which is the total count of all the comments with this article_id  ", () => {
+        const article_id = 1;
+        return request(app)
+          .get(`/api/articles?article_id=${article_id}`)
+    
+          .expect(200)
+          .then((data) => {
+            
+            expect(data.body[0]).toHaveProperty("comment_count")
+            expect(data.body[0].comment_count).toBe("11")
+          });
+      });
+      
+      test("it should return a 404 status ", () => {
+        const article_id = 222;
+        return request(app)
+          .get(`/api/articles?article_id=${article_id}`)
+    
+          .expect(404)
+          .then((data) => {
+            expect(data.body.msg).toEqual("Path not found");
+          });
+      });
+
+  
+    });
+   });
