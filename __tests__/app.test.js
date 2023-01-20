@@ -380,7 +380,38 @@ describe("app", () => {
         });
     });
   
-    
+    });
+
+    describe('DELETE /api/restaurants/:restaurant_id', () => {
+
+      test('it should should delete the specified restaurant from the database and return 204 status', () => {
+      return request(app)
+      .delete("/api/comments/1")
+      .expect(204) 
+      .then((result)=>{
+       
+        expect(result.res.statusMessage).toEqual("No Content")      
+      });
+    });
+
+    test('it should should 404 status and user does not exist message if the Id doesnt exist', () => {
+      return request(app)
+      .delete("/api/comments/25")
+      .expect(404) 
+      .then((result)=>{
+        
+        expect(result.body.msg).toEqual("user does not exist")      
+      });
+    });
+
+    test('it should should 400 status and Invalid id message if the Id is invalid id', () => {
+      return request(app)
+      .delete("/api/comments/banana")
+      .expect(400) 
+      .then((result)=>{
+      expect(result.body.msg).toEqual("Invalid id")      
+      });
+    });
     });
   
 });
