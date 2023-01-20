@@ -379,8 +379,75 @@ describe("app", () => {
         });
         });
     });
-  
-    
+  });
+
+  describe("10. GET /api/articles (queries)", () => {
+    test("it should return an array of articles objects filtered by a givin topic sorted in ascending order by article_id", () => {
+      const topic = "mitch";
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=ASC&sortBy=article_id`)
+        .expect(200)
+        .then((data) => {
+          expect(data.body.length).toBe(11);
+          expect(data.body[0].article_id).toBe(1);
+          expect(data.body[data.body.length-1].article_id).toBe(12);
+          data.body.forEach((topic) => {
+          expect(topic.topic).toBe("mitch");
+        
+          });
+        });
     });
+  
+    test("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
+      const topic = "mitch";
+      return request(app)
+        .get(`/api/articles?topic=mitch`)
+        .expect(200)
+        
+        .then((data) => {
+         
+          expect(data.body.length).toBe(11);
+          expect(data.body[0].created_at).toBe('2020-11-03T09:12:00.000Z');
+          expect(data.body[data.body.length-1].created_at).toBe('2020-01-07T14:08:00.000Z');
+          data.body.forEach((topic) => {
+          expect(topic.topic).toBe("mitch");
+          
+          });
+
+        })
+       
+    });
+  
+  test(" it should return an array of all articles objects if no topic is passed", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toHaveLength(12);
+        result.body.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title")
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("created_at")
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url")
+          expect(article).toHaveProperty("comment_count")
+         
+         });
+         });
+  });
+  
+  test("Returns a 404 err status when passing topic which doesn`t exist", () => {
+    const topic = "NeverEnding";
+      return request(app)
+      .get(`/api/articles?topic=NeverEnding`)
+      .expect(404)
+      .then((data) => {
+       expect(data.body.msg).toBe("Path not found");
+      });
+  });
+});
+
+
   
 });
