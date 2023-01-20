@@ -11,19 +11,17 @@ const {
     });
   };
   
-  function getArticles(req, res, next) {
-  
+
+  const getArticles = (req, res, next) => {
     const { sortBy, order } = req.query;
     readArticles(req, sortBy, order)
-      .then((article) => {
-        res.status(200).send(article);
-      })
-      .catch((err) => {
-        
-        next(err);
-      });
-  }
-  
+          .then((articles) => {
+            res.status(200).send(articles);
+          })
+          .catch((err) => {
+            next(err);
+          });
+    };
 
   const getArticlesID = ( req, res, next) => {
     const { id } = req.params

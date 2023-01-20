@@ -4,6 +4,9 @@ const  db  = require("../db/connection");
 const data = require("../db/data/test-data/index");
 const   seed  = require("../db/seeds/seed");
 
+require('jest-sorted');
+
+
 afterAll(() => {
   return db.end();
 });
@@ -379,35 +382,69 @@ describe("app", () => {
         });
         });
     });
-  
-    
-    });
-  
-    describe("GET : Task-11 /api/articles/:article_id (comment count)", () => {
-      test("it should return a comment_count property which is the total count of all the comments with this article_id  ", () => {
-        const article_id = 1;
-        return request(app)
-          .get(`/api/articles?article_id=${article_id}`)
-    
-          .expect(200)
-          .then((data) => {
-            
-            expect(data.body[0]).toHaveProperty("comment_count")
-            expect(data.body[0].comment_count).toBe("11")
-          });
-      });
-      
-      test("it should return a 404 status ", () => {
-        const article_id = 222;
-        return request(app)
-          .get(`/api/articles?article_id=${article_id}`)
-    
-          .expect(404)
-          .then((data) => {
-            expect(data.body.msg).toEqual("Path not found");
-          });
-      });
+  });
 
-  
+  describe("10. GET /api/articles (queries)", () => {
+    test("it should return an array of articles objects filtered by a givin topic sorted in ascending order by article_id", () => {
+      
+      return request(app)
+        .get(`/api/articles?topic=mitch&order=ASC&sortBy=article_id`)
+        .expect(200)
+        .then((data) => {
+          expect(data.body.length).toBe(11);
+          expect([data.body]).toBeSorted({ key: 'article_id' });
+          data.body.forEach((topic) => {
+          expect(topic.topic).toBe("mitch");
+        
+          });
+        });
     });
+  
+    test.only("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
+     
+        return request(app)
+        .get(`/api/articles?topic=mitch`)
+        .expect(200)
+        .then((data) => {
+        expect(data.body.length).toBe(11);
+        expect([data.body]).toBeSorted({ key: 'created_at' }); 
+        data.body.forEach((topic) => {
+        expect(topic.topic).toBe("mitch");
+          
+          });
+
+        })
+       
+    });
+  
+  test(" it should return an array of all articles objects if no topic is passed", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toHaveLength(12);
+        result.body.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title")
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("created_at")
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url")
+          expect(article).toHaveProperty("comment_count")
+         
+         });
+         });
+  });
+  
+  test("Returns a 400 err status when passing topic which doesn`t exist", () => {
+   
+      return request(app)
+      .get(`/api/articles?topic=NeverEnding`)
+      .expect(400)
+      .then((data) => {
+       expect(data.body.msg).toBe("Bad request");
+      });
+  });
+});
+    
    });

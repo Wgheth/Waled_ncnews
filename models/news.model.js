@@ -9,33 +9,22 @@ const readTopics = () => {
     });
 };
 
-function readArticles(request, sortBy = "created_at", order = "DESC") {
-  
-    const { article_id } = request.query;
-  const { topic } = request.query;
-  if (!topic && !article_id) {
-    let countString = `SELECT articles.article_id, articles.title, articles.topic, 
-    articles.author, articles.body, articles.created_at, articles.votes, 
-    articles.article_img_url,  COUNT(comments.body) AS comment_count
-    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id ORDER BY ${sortBy}  ${order};`;
-    return db.query(countString).then((result) => {
-      return result.rows;
-    });
-  } else if (article_id ) {
-        return db
-      .query(
-        `SELECT articles.author,articles.title, articles.topic,articles.article_id,articles.created_at,articles.votes,articles.article_img_url, COUNT(comments.article_id) AS comment_count
-         FROM articles,comments WHERE articles.article_id=$1 AND comments.article_id=$1 GROUP BY articles.article_id;`,
-        [article_id]
-      )
+const readArticles = ((req, sortBy = "created_at", order = "DESC")=>{
+  const { topic } = req.query;
+
+  if (!topic){ 
+  let countString =  `SELECT articles.article_id, articles.title, articles.topic, 
+  articles.author, articles.body, articles.created_at, articles.votes, 
+  articles.article_img_url,  COUNT(comments.body) AS comment_count
+  FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
+  GROUP BY articles.article_id ORDER BY ${sortBy}  ${order};` 
+  return db
+      .query(countString)
       .then((result) => {
-        if (result.rows.length === 0)
-        return Promise.reject({ status: 404, msg: "Path not found" });
-        else return result.rows;
-      });
-  } 
-  else if (topic) {
+        return result.rows;
+      })
+      
+  } else if (topic) {
     return db
       .query(
         `SELECT * FROM articles WHERE topic = $1 ORDER BY ${sortBy} ${order}; `,
@@ -43,16 +32,13 @@ function readArticles(request, sortBy = "created_at", order = "DESC") {
       )
       .then((result) => {
         if (result.rows.length === 0) {
-          return Promise.reject({ status: 404, msg: "Path not found" });
+          return Promise.reject({ status: 400, msg: "Bad request" });
         } else {
           return result.rows;
         }
       });
   } 
-  
-  
-}
-
+});
 const readArticlesID = (id) =>{
   return db.query(`SELECT * FROM articles WHERE article_id = $1;`, [id])
     .then((result) => {
