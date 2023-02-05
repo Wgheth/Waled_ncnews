@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 describe("app", () => {
-  describe("/api/topics", () => {
+  describe(" GET /api/topics", () => {
     test("Returns Error with 404 when the path is incorrect", () => {
       return request(app)
         .get("/not-a-path")
@@ -42,7 +42,7 @@ describe("app", () => {
   });
 
 
-  describe("/api/articles", () => {
+  describe("GET/api/articles", () => {
     it("returns a status of 200 and array of 12 objects.", () => {
       return request(app)
       .get("/api/articles")
@@ -99,7 +99,7 @@ describe("app", () => {
       .get(`/api/articles/${article_id}`)
       .expect(200)
       .then((result) => {
-        
+       
           expect(result.body).toHaveProperty("author");
           expect(result.body).toHaveProperty("title")
           expect(result.body).toHaveProperty("article_id");
@@ -348,7 +348,7 @@ describe("app", () => {
     test('Returns Error with 400 when incremnt isnt provided/has a missing inv_votes/isnt a number', () => {
       
       const article_id = 9;
-     
+    
       return request(app)
       .patch(`/api/articles/${article_id}`)
      
@@ -382,5 +382,81 @@ describe("app", () => {
   
     
     });
-  
+
+    describe("10. GET /api/articles (queries)", () => {
+      test("it should return an array of articles objects filtered by a givin topic sorted in ascending order by article_id", () => {
+        const topic = "mitch";
+        return request(app)
+          .get(`/api/articles?topic=mitch&order=ASC&sortBy=article_id`)
+          .expect(200)
+          .then((data) => {
+            expect(data.body.length).toBe(11);
+            expect(data.body[0].article_id).toBe(1);
+            expect(data.body[data.body.length-1].article_id).toBe(12);
+            data.body.forEach((topic) => {
+            expect(topic.topic).toBe("mitch");
+          
+            });
+          });
+      });
+    
+      test("it should return an array of articles objects filtered by a givin topic sorted and ordered by the defult values", () => {
+        const topic = "mitch";
+        return request(app)
+          .get(`/api/articles?topic=mitch`)
+          .expect(200)
+          
+          .then((data) => {
+           
+            expect(data.body.length).toBe(11);
+            expect(data.body[0].created_at).toBe('2020-11-03T09:12:00.000Z');
+            expect(data.body[data.body.length-1].created_at).toBe('2020-01-07T14:08:00.000Z');
+            data.body.forEach((topic) => {
+            expect(topic.topic).toBe("mitch");
+            
+            });
+
+          })
+         
+      });
+    
+    test(" it should return an array of all articles objects if no topic is passes", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then((result) => {
+          expect(result.body).toHaveLength(12);
+          result.body.forEach((article) => {
+            expect(article).toHaveProperty("author");
+            expect(article).toHaveProperty("title")
+            expect(article).toHaveProperty("article_id");
+            expect(article).toHaveProperty("created_at")
+            expect(article).toHaveProperty("votes");
+            expect(article).toHaveProperty("article_img_url")
+            expect(article).toHaveProperty("comment_count")
+           
+           });
+           });
+    });
+    
+    test("Returns a 404 err status when passing topic which doesn`t exist", () => {
+      const topic = "NeverEnding";
+        return request(app)
+        .get(`/api/articles?topic=NeverEnding`)
+        .expect(404)
+        .then((data) => {
+         expect(data.body.msg).toBe("Path not found");
+        });
+    });
+  });
+
+  describe('DELETE /api/comments/:comment_id', () => {
+
+    test('it should should delete the specified comment from the database and return 204 status', () => {
+      return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+    //  
+    });
+  });
 });
