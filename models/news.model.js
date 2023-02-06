@@ -139,10 +139,10 @@ function updateVotes(req) {
   }
 
   const removeComment = (id)=>{
-    console.log(id);
+  
     return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [id])
     .then((result) =>{
-      console.log(result.rows);
+     
       return ("hello")
     })
     

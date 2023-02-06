@@ -84,7 +84,7 @@ const {
 
   const deleteComment = (req, res) => {
     const { id } = req.params
-    console.log(req.params);
+   
      removeComment(id).then(()=>{
       res.sendStatus(204)
      })
